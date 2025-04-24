@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context 
+           http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/mvc 
+           http://www.springframework.org/schema/mvc/spring-mvc.xsd
+           http://www.springframework.org/schema/tx 
+           http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!-- Enable component scanning for your controllers and other Spring beans -->
+    <context:component-scan base-package="com" />
+
+    <!-- Enable annotation-driven controllers (e.g., @Controller, @RequestMapping) -->
+    <mvc:annotation-driven />
+
+    <!-- View resolver for resolving JSP files in /WEB-INF/views/ -->
+   <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="prefix" value="/WEB-INF/views/" />
+    <property name="suffix" value=".jsp" />
+</bean>
+
+    <!-- Enable annotation-based transaction management -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!-- Data Source -->
+    <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" name="ds">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:3306/productAdd?useSSL=false&amp;serverTimezone=UTC" />
+        <property name="username" value="root" />
+        <property name="password" value="root" />
+    </bean>
+
+    <!-- SessionFactory -->
+    <bean class="org.springframework.orm.hibernate5.LocalSessionFactoryBean" name="factory">
+        <property name="dataSource" ref="ds" />
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL57InnoDBDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+<!--         Annotated class  -->
+        <property name="annotatedClasses">
+            <list>
+                <value>com.Class.Product</value> <!-- Ensure proper class name -->
+            </list>
+        </property>
+    </bean>
+
+    <!-- HibernateTemplate -->
+    <bean class="org.springframework.orm.hibernate5.HibernateTemplate" name="ht">
+        <property name="sessionFactory" ref="factory" />
+    </bean>
+
+    <!-- Transaction Manager -->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="factory" />
+    </bean>
+
+<!--     DAO -->
+<!--     <bean class="com.swapnil.Dao.StudentDao" name="studentDao"> -->
+<!--         <property name="ht" ref="ht" /> -->
+<!--     </bean> -->
+
+</beans>
